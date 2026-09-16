@@ -1,0 +1,37 @@
+# systemd unit for a bare-metal / VPS install.
+#   sudo cp deploy/ca-sentinel.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now ca-sentinel
+#   journalctl -u ca-sentinel -f
+
+[Unit]
+Description=CA Sentinel - contract address change monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sentinel
+Group=sentinel
+WorkingDirectory=/opt/ca-sentinel
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/ca-sentinel/.venv/bin/python run.py run
+Restart=always
+RestartSec=5
+# Give the outbox time to flush before SIGKILL.
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/ca-sentinel/data /opt/ca-sentinel/logs
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

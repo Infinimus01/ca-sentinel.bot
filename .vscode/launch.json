@@ -1,0 +1,75 @@
+{
+  // Press F5, or pick a configuration from the Run and Debug panel (Ctrl/Cmd+Shift+D).
+  // All of these use whichever Python interpreter you selected for the workspace,
+  // so make sure that is ./.venv (Ctrl/Cmd+Shift+P -> "Python: Select Interpreter").
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "1. Test Telegram (run this first)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["test-telegram"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
+      "name": "2. Check a URL (dry run, no alerts)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": [
+        "check",
+        "${input:checkUrl}",
+        "--parser",
+        "${input:parserId}"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
+      "name": "3. Run the monitor",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["run"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
+      "name": "Stats",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["stats"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Recent addresses",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["recent", "20"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "checkUrl",
+      "type": "promptString",
+      "description": "URL to inspect",
+      "default": "https://suppoman.com/secretarea/"
+    },
+    {
+      "id": "parserId",
+      "type": "promptString",
+      "description": "Parser site_id (suppoman | generic)",
+      "default": "suppoman"
+    }
+  ]
+}

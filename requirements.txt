@@ -1,0 +1,8 @@
+httpx[http2,brotli]==0.27.2  # async client, HTTP/2, connection pooling, br decoding
+selectolax==0.3.21        # fast C-backed HTML parsing
+PyYAML==6.0.2             # config.yaml
+pycryptodome==3.20.0      # keccak-256 for EIP-55 checksum validation
+
+# Optional — only needed if you add a site that genuinely requires a
+# JS-rendered fetch (see README "Sites that need a browser").
+# playwright==1.47.0

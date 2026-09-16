@@ -1,0 +1,61 @@
+# CA Sentinel — site configuration.
+# Secrets live in .env, never here.
+
+defaults:
+  interval: 5                # seconds between polls when a target omits one
+  min_confidence: 0.6        # candidates below this are stored but not alerted
+  bootstrap: seed            # "seed" = record what is already live without
+                             # alerting; "alert" = announce it too
+  alert_on_new_route: true
+  jitter: 0.15               # ±15% spread so targets do not fire in lockstep
+  http_timeout: 10
+  max_connections: 32
+  db_path: data/sentinel.db
+  log_dir: logs
+  log_level: INFO
+  user_agent: >-
+    CA-Sentinel/1.0 (+public-page change monitor; conditional GET;
+    contact: set CONTACT_EMAIL)
+
+sites:
+  # ------------------------------------------------------------------
+  # suppoman.com — static HTML on Hostinger, CAs are literal page text.
+  # Conditional GETs return a zero-byte 304 when nothing changed, so a
+  # short interval is cheap. Raise these numbers if you want to be more
+  # conservative; 2s costs roughly 43k requests and ~9 MB of 304s a day.
+  # ------------------------------------------------------------------
+  - id: suppoman
+    parser: suppoman
+    base_url: https://suppoman.com
+    enabled: true
+    targets:
+      - path: /secretarea/    # the drop page — trailing slash avoids a 301 hop
+        interval: 2
+        priority: high
+      - path: /
+        interval: 4
+    discovery:
+      crawl_links: true       # new pages are usually linked the moment they exist
+      probe_routes: true      # paced wordlist sweep for unlinked pages
+      probe_interval: 600
+      probe_delay: 0.4
+      ct_logs: true           # public CT logs surface new subdomains early
+      ct_interval: 3600
+      discovered_interval: 15
+      max_watched: 50
+
+  # ------------------------------------------------------------------
+  # Template for a second site. Delete or copy as needed — `generic`
+  # handles most sites with no code at all.
+  # ------------------------------------------------------------------
+  # - id: example
+  #   parser: generic
+  #   base_url: https://example.com
+  #   enabled: false
+  #   targets:
+  #     - path: /
+  #       interval: 10
+  #   discovery:
+  #     crawl_links: true
+  #     probe_routes: false
+  #     ct_logs: false

@@ -1,0 +1,20 @@
+services:
+  ca-sentinel:
+    build: .
+    container_name: ca-sentinel
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data      # SQLite state — must persist across restarts
+      - ./logs:/app/logs
+      - ./config.yaml:/app/config.yaml:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    # Small footprint: the whole thing is one asyncio loop doing 304s.
+    deploy:
+      resources:
+        limits:
+          memory: 256M
